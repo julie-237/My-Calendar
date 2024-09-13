@@ -1,16 +1,78 @@
-def user_details():
+from datetime import datetime, timedelta
+
+cycle_date = ""
+def print_user_details():
     print("Welcome to my calendar ")
-    input("whats your name? ")
-    input("How old are you? ")
+    user_name = input("whats your name? ")
+    input("Hello " + user_name + " how old are you? ")
+    
+def collect_cycle_statistics():
+    with open("cycle_statistics.txt", "r") as f:
+        cycle_dates = f.read()
+        print("we assumed your period will start on " + cycle_dates)
+        
+collect_cycle_statistics()    
+print_user_details() 
+    
+last_period_date = input("How many days ago was your menstrual period? ")
+menstrual_periode_duration = input("How long does your menstrual periode usually last? ")
+normal_cycle_duration = 28 
+normal_ovulation_date = 14
+last_periode_date = datetime.now() - timedelta(days= int(last_period_date))
+print("so you last had your period on the " + str(last_periode_date))
+next_periode_date = datetime.now() + timedelta(days=int(normal_cycle_duration)-int(last_period_date))
+print("so we can assume your next period will be on the " + str(next_periode_date)) 
+cycle_date = (next_periode_date)
+with open("cycle_statistics.txt", "w") as f:
+    f.write(str(cycle_date))
+    
+     
+ 
     
     
-def compute_cyle():
-    last_period_date = input("When last was your menstrual period?(d, m, y) ")
-    menstrual_periode_duration = input("How long does your menstrual periode usually last? ")
-    normal_cycle_duration = 28 
-    normal_ovulation_date = 14
-    Next_periode_date = last_period_date + (normal_cycle_duration-1)
- #return if year is leap year or not   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+'''#return if year is leap year or not   
 def determine_leap_year(year:int):
     if (year % 100 != 0 and year % 4 == 0 or year % 400 == 0):
         return True
@@ -72,8 +134,8 @@ def add_number_of_days_to_date(day1:int, month1:int, year1:int, num:int):
                 year2_days = 366
         else:
            year2_days = 365
-    number_of_days_elapsed2 = num
+    number_of_days_elapsed2 = num'''
        
        
-days_elapsed_from_begining_of_year_to_given_date(20, 12, 2020)      
+     
         
