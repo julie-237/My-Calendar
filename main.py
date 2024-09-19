@@ -4,6 +4,7 @@ cycle_date = ""
 cycle_date_list = []
 
 assumed_cycle_duration = 30
+least_cycle_duration = 21
 reference_date = date.today() - timedelta(days=150)
 
 def print_user_details():
@@ -25,26 +26,17 @@ def submit_cycle_statistics():
         for periode_start_dates in cycle_date_list:
             f.write(date.strftime(periode_start_dates, "%d-%m-%Y") + "\n")
             
-def collect_cycle_statistics():
+def collect_cycle_statistics(): 
     duration_list = []
     with open("cycle_statistics.txt", "r") as f:
         cycle_date_list = f.read().splitlines()
     for i in range(len(cycle_date_list)-1):
         cycle_durations = datetime.strptime (cycle_date_list[i+1], "%d-%m-%Y") - datetime.strptime(cycle_date_list[i], "%d-%m-%Y")
         duration_list.append(cycle_durations.days) 
-    average_duration = mean(duration_list)
-    dict = {
-        "cycle_durations" : duration_list,
-        "average_cycle_duration" : int(average_duration),
-    }
-    return dict
-
-def start_to_end_date():
-    with open("cycle_statistics.txt", "r") as f:
-        cycle_date_list = f.read().splitlines()
-        for i in range(len(cycle_date_list)-1):
-            duration_details = ("cycle " + str(i+1) + " went from " + str(cycle_date_list[i]) + " to " + str(cycle_date_list[i+1]))
-            print(duration_details)
+        average_duration = mean(duration_list)
+        duration_details = ("cycle " + str(i+1) + " went from " + str(cycle_date_list[i]) + " to " + str(cycle_date_list[i+1]))
+        print(duration_details + " making it " + str(cycle_durations.days) + " days")
+    print("your average cycle durations for the past months is : " + str(average_duration))
         
 def custom_formatter(number_list: list[int]):
     if len(number_list) >= 2:
@@ -55,10 +47,7 @@ def custom_formatter(number_list: list[int]):
     else:
         return ""
 
-cycle_statistics = collect_cycle_statistics()
-start_to_end_date()
-print("your cycle durations for the past months are respectively: " + custom_formatter(cycle_statistics["cycle_durations"])) 
-print("your average cycle durations for the past months is : " + str(cycle_statistics["average_cycle_duration"])) 
+collect_cycle_statistics() 
 print_user_details()
 while reference_date < date.today():
     update = input("Any update? (yes or no) ")
