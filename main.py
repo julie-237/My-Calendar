@@ -4,7 +4,7 @@ cycle_date = ""
 cycle_date_list = []
 
 assumed_cycle_duration = 30
-reference_date = date.today()
+reference_date = date.today() - timedelta(days=150)
 
 def print_user_details():
     print("Welcome to my calendar ")
@@ -35,9 +35,16 @@ def collect_cycle_statistics():
     average_duration = mean(duration_list)
     dict = {
         "cycle_durations" : duration_list,
-        "average_cycle_duration" : average_duration
+        "average_cycle_duration" : int(average_duration),
     }
     return dict
+
+def start_to_end_date():
+    with open("cycle_statistics.txt", "r") as f:
+        cycle_date_list = f.read().splitlines()
+        for i in range(len(cycle_date_list)-1):
+            duration_details = ("cycle " + str(i+1) + " went from " + str(cycle_date_list[i]) + " to " + str(cycle_date_list[i+1]))
+            print(duration_details)
         
 def custom_formatter(number_list: list[int]):
     if len(number_list) >= 2:
@@ -49,29 +56,33 @@ def custom_formatter(number_list: list[int]):
         return ""
 
 cycle_statistics = collect_cycle_statistics()
+start_to_end_date()
 print("your cycle durations for the past months are respectively: " + custom_formatter(cycle_statistics["cycle_durations"])) 
 print("your average cycle durations for the past months is : " + str(cycle_statistics["average_cycle_duration"])) 
 print_user_details()
-update = input("Any update? (yes or no) ")
-while update == "yes":
-    period_on = input("you had your periode?")
-    if period_on == "yes":
-        num_days = input("How many days ago was your menstrual period?(if today, enter 0) ")    
-        recent_periode_date_computing()
-        cycle_date_list.append(recent_periode_date_computing())  
-        submit_cycle_statistics() 
-        print("so you last had your period on the " + str(recent_periode_date_computing()))    
-        compute_next_periode_date() 
-        cycle_date =  compute_next_periode_date()   
-        print("so we can assume your next period will be on the " + str(compute_next_periode_date())) 
-        reference_date = cycle_date
-        print("Today is " + str(reference_date)) 
+while reference_date < date.today():
+    update = input("Any update? (yes or no) ")
+    if update == "yes":
+        period_on = input("you had your periode?")
+        if period_on == "yes":
+            num_days = input("How many days ago was your menstrual period?(if today, enter 0) ")    
+            recent_periode_date_computing()
+            cycle_date_list.append(recent_periode_date_computing())  
+            submit_cycle_statistics() 
+            print("so you last had your period on the " + str(recent_periode_date_computing()))    
+            compute_next_periode_date() 
+            cycle_date =  compute_next_periode_date()   
+            print("so we can assume your next period will be on the " + str(compute_next_periode_date())) 
+            reference_date = cycle_date
+            if reference_date < date.today(): 
+                print("Today is " + str(reference_date))
+        else:
+            print("Ok! see you tomorrow.")
+            reference_date = reference_date + timedelta(days=1) 
+            if reference_date < date.today(): 
+                print("Today is " + str(reference_date))
     else:
-       print("Ok! see you tomorrow.")
-       reference_date = reference_date + timedelta(days=1) 
-       print("Today is " + str(reference_date))
-    update = input("Any update? (yes or no) ")  
-print("Ok! see you next time...")
+        print("Ok! see you next time...")
        
 
 
