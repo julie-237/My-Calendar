@@ -1,83 +1,70 @@
-from datetime import date, timedelta
-
+from datetime import datetime, timedelta, date
 cycle_date = ""
+cycle_date_list = []
 
-assumed_cycle_duration = 32 
-assumed_ovulation_date = 16
+assumed_cycle_duration = 30
+reference_date = date.today()
 
 def print_user_details():
     print("Welcome to my calendar ")
     user_name = input("whats your name? ")
-    print("Hello " + user_name + " you can register your menstrual cycle details for five months in order to obtain your average cycle duration and ovulation periode")
-    print("Today is " + str(date.today()-timedelta(days= 150)))
+    print("Hello " + user_name + " you can register your monthly cycle details and obtain your average cycle duration")
+    print("Today is " + str(reference_date))
     
+def recent_periode_date_computing():  
+    last_periode_date = reference_date - timedelta(days= int(num_days))
+    return last_periode_date
+
+def compute_next_periode_date():
+    next_periode_date = reference_date + timedelta(days=int(assumed_cycle_duration)-int(num_days))
+    return next_periode_date
+
+def submit_cycle_statistics():
+   with open ("cycle_statistics.txt", "w") as f:
+        for periode_start_dates in cycle_date_list:
+            f.write(date.strftime(periode_start_dates, "%d-%m-%Y"))
+            
 def collect_cycle_statistics():
     with open("cycle_statistics.txt", "r") as f:
-        cycle_date = f.read()
-    print("we assumed your period will start on " + cycle_date)
-    
-def compute_last_period_date(response:int): 
-    if not cycle_date != "":
-        reference_date = date.today()-timedelta(days= 150)
-        last_periode_date = reference_date - timedelta(int(response))
-    else: 
-        reference_date = cycle_date   
-        last_periode_date = reference_date - timedelta(int(response))
-    return last_periode_date
-    
-
-def compute_next_period_date(response:int):
-    num_days = int(assumed_cycle_duration)-int(response)
-    if not cycle_date != "":
-        reference_date = date.today()-timedelta(days= 150)
-        next_periode_date = reference_date + (timedelta(num_days))
-    else: 
+        cycle_date_list = f.read().splitlines()
+    for i in range(len(cycle_date_list)-1):
+        cycle_durations = datetime.strptime (cycle_date_list[i+1], "%d-%m-%Y") - datetime.strptime(cycle_date_list[i], "%d-%m-%Y")
+        return cycle_durations
+        
+print_user_details()
+update = input("Any update? (yes or no) ")
+while update == "yes":
+    period_on = input("you had your periode?")
+    if period_on == "yes":
+        num_days = input("How many days ago was your menstrual period?(if today, enter 0) ")    
+        recent_periode_date_computing()
+        cycle_date_list.append(recent_periode_date_computing())  
+        submit_cycle_statistics() 
+        print("so you last had your period on the " + str(recent_periode_date_computing()))    
+        compute_next_periode_date() 
+        cycle_date =  compute_next_periode_date()   
+        print("so we can assume your next period will be on the " + str(compute_next_periode_date())) 
         reference_date = cycle_date
-        next_periode_date = reference_date + (timedelta(num_days))
-    return next_periode_date
-    
-def submit_cycle_statistics():
-    with open("cycle_statistics.txt", "a") as f:
-        f.write(str(cycle_date))
-    
-    
-     
-print_user_details()  
-for i in range(5):
-    i += 1  
-    if i > 2:   
-        collect_cycle_statistics()  
-    response = input("How many days ago was your menstrual period? ")  
-    last_periode_date = compute_last_period_date(int(response))
-    print("so you last had your period on the " + str(last_periode_date))
-    next_periode_date = compute_next_period_date(int(response))
-    print("so we can assume your next period will be on the " + str(next_periode_date)) 
-    cycle_date = (next_periode_date)
-    submit_cycle_statistics()
-    print("Today is " + str(cycle_date))
+        print("Today is " + str(reference_date)) 
+    else:
+       print("Ok! see you tomorrow.")
+       reference_date = reference_date + timedelta(days=1) 
+       print("Today is " + str(reference_date))
+    update = input("Any update? (yes or no) ")  
+print("Ok! see you next time...")
+print("your cycle durations for the past months are respectively: " + str(collect_cycle_statistics()))
 
-'''d1 = date(2022, 1, 1)
-d2 = date(2022, 1, 1)
-print
-print(date.today())'''
+    
+    
+    
+    
+    
+    
+    
+    
 
-     
- 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+   
     
     
     
