@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, date
+from statistics import mean
 cycle_date = ""
 cycle_date_list = []
 
@@ -22,15 +23,34 @@ def compute_next_periode_date():
 def submit_cycle_statistics():
    with open ("cycle_statistics.txt", "w") as f:
         for periode_start_dates in cycle_date_list:
-            f.write(date.strftime(periode_start_dates, "%d-%m-%Y"))
+            f.write(date.strftime(periode_start_dates, "%d-%m-%Y") + "\n")
             
 def collect_cycle_statistics():
+    duration_list = []
     with open("cycle_statistics.txt", "r") as f:
         cycle_date_list = f.read().splitlines()
     for i in range(len(cycle_date_list)-1):
         cycle_durations = datetime.strptime (cycle_date_list[i+1], "%d-%m-%Y") - datetime.strptime(cycle_date_list[i], "%d-%m-%Y")
-        return cycle_durations
+        duration_list.append(cycle_durations.days) 
+    average_duration = mean(duration_list)
+    dict = {
+        "cycle_durations" : duration_list,
+        "average_cycle_duration" : average_duration
+    }
+    return dict
         
+def custom_formatter(number_list: list[int]):
+    if len(number_list) >= 2:
+        number_list_last_item = str(number_list[-1])
+        return ", ".join(list(map(str,number_list[:-1]))) + " and " + number_list_last_item 
+    elif len(number_list) == 1:
+        return (str(number_list[0]))
+    else:
+        return ""
+
+cycle_statistics = collect_cycle_statistics()
+print("your cycle durations for the past months are respectively: " + custom_formatter(cycle_statistics["cycle_durations"])) 
+print("your average cycle durations for the past months is : " + str(cycle_statistics["average_cycle_duration"])) 
 print_user_details()
 update = input("Any update? (yes or no) ")
 while update == "yes":
@@ -52,7 +72,8 @@ while update == "yes":
        print("Today is " + str(reference_date))
     update = input("Any update? (yes or no) ")  
 print("Ok! see you next time...")
-print("your cycle durations for the past months are respectively: " + str(collect_cycle_statistics()))
+       
+
 
     
     
