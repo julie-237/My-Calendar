@@ -28,15 +28,19 @@ def submit_cycle_statistics():
             
 def collect_cycle_statistics(): 
     duration_list = []
-    with open("cycle_statistics.txt", "r") as f:
-        cycle_date_list = f.read().splitlines()
+    cycle_date_list = load_cycle_date_from_file()
     for i in range(len(cycle_date_list)-1):
         cycle_durations = datetime.strptime (cycle_date_list[i+1], "%d-%m-%Y") - datetime.strptime(cycle_date_list[i], "%d-%m-%Y")
         duration_list.append(cycle_durations.days) 
-        average_duration = mean(duration_list)
         duration_details = ("cycle " + str(i+1) + " went from " + str(cycle_date_list[i]) + " to " + str(cycle_date_list[i+1]))
         print(duration_details + " making it " + str(cycle_durations.days) + " days")
+    average_duration = int(mean(duration_list))
     print("your average cycle durations for the past months is : " + str(average_duration))
+
+def load_cycle_date_from_file():
+    with open("cycle_statistics.txt", "r") as f:
+        cycle_date_list = f.read().splitlines()
+    return cycle_date_list
         
 def custom_formatter(number_list: list[int]):
     if len(number_list) >= 2:
@@ -46,15 +50,42 @@ def custom_formatter(number_list: list[int]):
         return (str(number_list[0]))
     else:
         return ""
-
-collect_cycle_statistics() 
+    
+cycle_date_list = load_cycle_date_from_file()
+if len(cycle_date_list) >= 2:
+    collect_cycle_statistics() 
 print_user_details()
 while reference_date < date.today():
     update = input("Any update? (yes or no) ")
     if update == "yes":
         period_on = input("you had your periode?")
         if period_on == "yes":
-            num_days = input("How many days ago was your menstrual period?(if today, enter 0) ")    
+            num_days = input("How many days ago was your menstrual period?(if today, enter 0) ")
+            while cycle_date != "" and int(num_days) >= 10:
+                print("your last had you periode on the " + str(reference_date - timedelta(days= 30)) 
+                      + " so you could not possibly have your next periode before the " + str(cycle_date - timedelta(days=9)))
+                print("what you had was not your menstrual period, it could be something else")
+                print("it could occur as a result of rough and harsh sexual activities")
+                activity = input("Any sexual activity ? ")
+                if activity == "yes":
+                    list_of_possible_causes = ["i was sexually abused", "its my boyfriend", "its my husband", "its my sugar-daddy"]
+                    for i, causes in enumerate(list_of_possible_causes):
+                        i +=1
+                        print(str(i) + " : " + causes)
+                    user_response = int(input("what could be the cause? (choose a number please) "))
+                    
+                    if user_response == 1:
+                        print("Oh thats so sad, sorry to hear that ")
+                    elif user_response == 2:
+                        print("Oh thats so sad, you should tell him to be soft ")
+                    elif user_response == 3:
+                        print("Oh thats so sad, you should tell him to be soft ")
+                    elif user_response == 4:
+                        print('''Oh thats so sad, sugar-daddies usually don't have enough strenght to be that rough,
+                              he might be a sex-addict, you could go to social services ''')
+                else:
+                    print("Try consulting a doctor ")
+                num_days = input("How many days ago was your menstrual period?(if today, enter 0) ")       
             recent_periode_date_computing()
             cycle_date_list.append(recent_periode_date_computing())  
             submit_cycle_statistics() 
