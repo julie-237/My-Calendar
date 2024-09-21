@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, date
 from statistics import mean
+
 cycle_date = ""
 cycle_date_list = []
 
@@ -7,146 +8,189 @@ assumed_cycle_duration = 30
 least_cycle_duration = 21
 reference_date = date.today() - timedelta(days=150)
 
+
 def print_user_details():
     print("Welcome to my calendar ")
     user_name = input("whats your name? ")
-    print("Hello " + user_name + " you can register your monthly cycle details and obtain your average cycle duration")
+    print(
+        "Hello "
+        + user_name
+        + " you can register your monthly cycle details and obtain your average cycle duration"
+    )
     print("Today is " + str(reference_date))
-    
-def recent_periode_date_computing():  
-    last_periode_date = reference_date - timedelta(days= int(num_days))
+
+
+def recent_periode_date_computing():
+    last_periode_date = reference_date - timedelta(days=int(num_days))
     return last_periode_date
 
+
 def compute_next_periode_date():
-    next_periode_date = reference_date + timedelta(days=int(assumed_cycle_duration)-int(num_days))
+    next_periode_date = reference_date + timedelta(
+        days=int(assumed_cycle_duration) - int(num_days)
+    )
     return next_periode_date
 
+
 def submit_cycle_statistics():
-   with open ("cycle_statistics.txt", "w") as f:
+    with open("cycle_statistics.txt", "w") as f:
         for periode_start_dates in cycle_date_list:
             f.write(date.strftime(periode_start_dates, "%d-%m-%Y") + "\n")
-            
-def collect_cycle_statistics(): 
+
+
+def collect_cycle_statistics():
     duration_list = []
     cycle_date_list = load_cycle_date_from_file()
-    for i in range(len(cycle_date_list)-1):
-        cycle_durations = datetime.strptime (cycle_date_list[i+1], "%d-%m-%Y") - datetime.strptime(cycle_date_list[i], "%d-%m-%Y")
-        duration_list.append(cycle_durations.days) 
-        duration_details = ("cycle " + str(i+1) + " went from " + str(cycle_date_list[i]) + " to " + str(cycle_date_list[i+1]))
+    for i in range(len(cycle_date_list) - 1):
+        cycle_durations = datetime.strptime(
+            cycle_date_list[i + 1], "%d-%m-%Y"
+        ) - datetime.strptime(cycle_date_list[i], "%d-%m-%Y")
+        duration_list.append(cycle_durations.days)
+        duration_details = (
+            "cycle "
+            + str(i + 1)
+            + " went from "
+            + str(cycle_date_list[i])
+            + " to "
+            + str(cycle_date_list[i + 1])
+        )
         print(duration_details + " making it " + str(cycle_durations.days) + " days")
-    average_duration = int(mean(duration_list))
-    print("your average cycle durations for the past months is : " + str(average_duration))
+    if len(cycle_date_list) >= 2:
+        average_duration = int(mean(duration_list))
+        print(
+            "your average cycle durations for the past months is : "
+            + str(average_duration)
+        )
+
 
 def load_cycle_date_from_file():
     with open("cycle_statistics.txt", "r") as f:
         cycle_date_list = f.read().splitlines()
     return cycle_date_list
-        
+
+
 def custom_formatter(number_list: list[int]):
     if len(number_list) >= 2:
         number_list_last_item = str(number_list[-1])
-        return ", ".join(list(map(str,number_list[:-1]))) + " and " + number_list_last_item 
+        return (
+            ", ".join(list(map(str, number_list[:-1])))
+            + " and "
+            + number_list_last_item
+        )
     elif len(number_list) == 1:
-        return (str(number_list[0]))
+        return str(number_list[0])
     else:
         return ""
-    
-cycle_date_list = load_cycle_date_from_file()
-if len(cycle_date_list) >= 2:
-    collect_cycle_statistics() 
+
+
+collect_cycle_statistics()
 print_user_details()
-while reference_date < date.today():
-    update = input("Any update? (yes or no) ")
-    if update == "yes":
-        period_on = input("you had your periode?")
-        if period_on == "yes":
-            num_days = input("How many days ago was your menstrual period?(if today, enter 0) ")
-            while cycle_date != "" and int(num_days) >= 10:
-                print("your last had you periode on the " + str(reference_date - timedelta(days= 30)) 
-                      + " so you could not possibly have your next periode before the " + str(cycle_date - timedelta(days=9)))
-                print("what you had was not your menstrual period, it could be something else")
-                print("it could occur as a result of rough and harsh sexual activities")
-                activity = input("Any sexual activity ? ")
-                if activity == "yes":
-                    list_of_possible_causes = ["i was sexually abused", "its my boyfriend", "its my husband", "its my sugar-daddy"]
-                    for i, causes in enumerate(list_of_possible_causes):
-                        i +=1
-                        print(str(i) + " : " + causes)
-                    user_response = int(input("what could be the cause? (choose a number please) "))
-                    
-                    if user_response == 1:
-                        print("Oh thats so sad, sorry to hear that ")
-                    elif user_response == 2:
-                        print("Oh thats so sad, you should tell him to be soft ")
-                    elif user_response == 3:
-                        print("Oh thats so sad, you should tell him to be soft ")
-                    elif user_response == 4:
-                        print('''Oh thats so sad, sugar-daddies usually don't have enough strenght to be that rough,
-                              he might be a sex-addict, you could go to social services ''')
-                else:
-                    print("Try consulting a doctor ")
-                num_days = input("How many days ago was your menstrual period?(if today, enter 0) ")       
-            recent_periode_date_computing()
-            cycle_date_list.append(recent_periode_date_computing())  
-            submit_cycle_statistics() 
-            print("so you last had your period on the " + str(recent_periode_date_computing()))    
-            compute_next_periode_date() 
-            cycle_date =  compute_next_periode_date()   
-            print("so we can assume your next period will be on the " + str(compute_next_periode_date())) 
-            reference_date = cycle_date
-            if reference_date < date.today(): 
-                print("Today is " + str(reference_date))
-        else:
-            print("Ok! see you tomorrow.")
-            reference_date = reference_date + timedelta(days=1) 
-            if reference_date < date.today(): 
-                print("Today is " + str(reference_date))
-    else:
-        print("Ok! see you next time...")
-       
+user_response = "yes"
+while reference_date <= date.today() and user_response != "quit":
+    user_response = input("Did you have your periode? ")
+    if user_response == "yes":
+        num_days = input(
+            "How many days ago was your menstrual period?(if today, enter 0) "
+        )
+        while cycle_date != "" and int(num_days) >= 10:
+            print(
+                "your last had you periode on the "
+                + str(reference_date - timedelta(days=30))
+                + " so you could not possibly have your next periode before the "
+                + str(cycle_date - timedelta(days=9))
+            )
+            print(
+                "what you had was not your menstrual period, it could be something else"
+            )
+            print("it could occur as a result of rough and harsh sexual activities")
+            question = "Any sexual activity ?(yes or no) "
+            activity = input(question)
+            while activity not in  ("yes","no"):
+                activity = input("Invalid response, what do you mean? " + question)
+            if activity == "yes":
+                list_of_possible_causes = [
+                    "i was sexually abused",
+                    "its my boyfriend",
+                    "its my husband",
+                    "its my sugar-daddy",
+                ]
+                for i, causes in enumerate(list_of_possible_causes):
+                    i += 1
+                    print(str(i) + " : " + causes)
+                user_response = int(
+                    input("what could be the cause? (choose a number please) ")
+                )
+
+                if user_response == 1:
+                    print("Oh thats so sad, sorry to hear that ")
+                elif user_response == 2:
+                    print("Oh thats so sad, you should tell him to be soft ")
+                elif user_response == 3:
+                    print("Oh thats so sad, you should tell him to be soft ")
+                elif user_response == 4:
+                    print(
+                        "Oh thats so sad, sugar-daddies usually don't have enough strenght to be that rough,",
+                        "he might be a sex-addict, you could go to social services",
+                    )
+            else:
+                print("Try consulting a doctor ")
+            reference_date = reference_date + timedelta(days=1)
+            print("Today is " + str(reference_date))
+            num_days = input(
+                "How many days ago was your menstrual period?(if today, enter 0) "
+            )
+        recent_periode_date_computing()
+        cycle_date_list.append(recent_periode_date_computing())
+        submit_cycle_statistics()
+        print(
+            "so you last had your period on the " + str(recent_periode_date_computing())
+        )
+        compute_next_periode_date()
+        cycle_date = compute_next_periode_date()
+        print(
+            "so we can assume your next period will be on the "
+            + str(compute_next_periode_date())
+        )
+        reference_date = cycle_date
+        if reference_date <= date.today():
+            print("Today is " + str(reference_date))
+    elif user_response == "no":
+        number_of_days_to_today = (date.today() - reference_date).days
+        deal_date = min(number_of_days_to_today, 5)
+        reference_date = reference_date + timedelta(days=deal_date)
+        if reference_date <= date.today():
+            print("Ok! see you in", deal_date, "days.")
+            print("Today is " + str(reference_date))
+
+    elif user_response != "quit":
+        print("sorry what do you mean?")
 
 
-    
-    
-    
-    
-    
-    
-    
-    
 
 
-   
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-'''#return if year is leap year or not   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""#return if year is leap year or not   
 def determine_leap_year(year:int):
     if (year % 100 != 0 and year % 4 == 0 or year % 400 == 0):
         return True
@@ -208,8 +252,4 @@ def add_number_of_days_to_date(day1:int, month1:int, year1:int, num:int):
                 year2_days = 366
         else:
            year2_days = 365
-    number_of_days_elapsed2 = num'''
-       
-       
-     
-        
+    number_of_days_elapsed2 = num"""
