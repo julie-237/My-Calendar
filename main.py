@@ -161,6 +161,11 @@ while reference_date <= date.today() and user_response != "quit":
         if reference_date <= date.today():
             print("Ok! see you in", deal_date, "days.")
             print("Today is " + str(reference_date))
+        num_days_late = (reference_date - cycle_date).days
+        if num_days_late >= 14:
+            num_of_weeks = int((assumed_cycle_duration + num_days_late) / 7)
+            print("You should be pregnant for exactly " + str(num_of_weeks) + " weeks. You should go to the hospital for confirmation and follow up")
+        exit
 
     elif user_response != "quit":
         print("sorry what do you mean?")
